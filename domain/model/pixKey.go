@@ -11,10 +11,11 @@ import (
 // NewPixKey ...
 func NewPixKey(account *Account, kind, key string) (*PixKey, error) {
 	pk := &PixKey{
-		Account: account,
-		Kind:    kind,
-		Key:     key,
-		Status:  "active",
+		AccountID: account.ID,
+		Account:   account,
+		Kind:      kind,
+		Key:       key,
+		Status:    "active",
 	}
 
 	pk.ID = uuid.NewV4().String()
@@ -38,22 +39,22 @@ type PixKeyRepositoryInterface interface {
 // PixKey ...
 type PixKey struct {
 	Base      `valid:"required"`
-	AccountID string   `json:"account_id" valid:"notnull"`
+	AccountID string   `gorm:"column:account_id;type:uuid;not null" valid:"-"`
 	Account   *Account `valid:"-"`
 	Kind      string   `json:"kind" valid:"notnull"`
 	Key       string   `json:"key" valid:"notnull"`
 	Status    string   `json:"status" valid:"notnull"`
 }
 
-func (pk *PixKey) isValid() error {	
+func (pk *PixKey) isValid() error {
 	if pk.Kind != "email" && pk.Kind != "cpf" {
 		return errors.New("invalid type of key")
 	}
-	
+
 	if pk.Status != "active" && pk.Status != "inactive" {
 		return errors.New("invalid status")
 	}
-	
+
 	_, err := validator.ValidateStruct(pk)
 	if err != nil {
 		return err

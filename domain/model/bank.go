@@ -31,9 +31,9 @@ func NewBank(code, name string) (*Bank, error) {
 // Bank ...
 type Bank struct {
 	Base    `valid:"required"`
-	Code    string     `json:"code" valid:"notnull"`
-	Name    string     `json:"name" valid:"notnull"`
-	Account []*Account `valid:"-"`
+	Code    string     `json:"code" valid:"notnull" gorm:"type:varchar(20)"`
+	Name    string     `json:"name" valid:"notnull" gorm:"type:varchar(255)"`
+	Account []*Account `valid:"-" gorm:"ForeignKey:BankID"`
 }
 
 func (b *Bank) isValid() error {

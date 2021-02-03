@@ -10,6 +10,7 @@ import (
 // NewAccount ...
 func NewAccount(bank *Bank, owner, number string) (*Account, error) {
 	account := &Account{
+		BankID: bank.ID,
 		Bank:      bank,
 		OwnerName: owner,
 		Number:    number,
@@ -29,9 +30,10 @@ func NewAccount(bank *Bank, owner, number string) (*Account, error) {
 type Account struct {
 	Base      `valid:"required"`
 	Bank      *Bank     `valid:"-"`
-	OwnerName string    `json:"owner_name" valid:"notnull"`
-	Number    string    `json:"number" valid:"notnull"`
-	PixKeys   []*PixKey `valid:"-"`
+	BankID    string    `gorm:"column:bank_id;type:uuid;not null" valid:"-"`
+	OwnerName string    `json:"owner_name" valid:"notnull" gorm:"column:owner_name;type:varchar(255);not null"`
+	Number    string    `json:"number" valid:"notnull" gorm:"type:varchar(20)"`
+	PixKeys   []*PixKey `valid:"-" gorm:"ForeignKey:AccountID"`
 }
 
 func (a *Account) isValid() error {

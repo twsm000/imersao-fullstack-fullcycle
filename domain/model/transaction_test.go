@@ -16,11 +16,11 @@ func TestNewTransaction(t *testing.T) {
 
 	accountNumber := "abcnumber"
 	ownerName := "Wesley"
-	account, _ := model.NewAccount(bank, accountNumber, ownerName)
+	account, _ := model.NewAccount(bank, ownerName, accountNumber)
 
 	accountNumberDestination := "abcdestination"
 	ownerName = "Mariana"
-	accountDestination, _ := model.NewAccount(bank, accountNumberDestination, ownerName)
+	accountDestination, _ := model.NewAccount(bank, ownerName, accountNumberDestination)
 
 	kind := "email"
 	key := "j@j.com"
@@ -29,7 +29,7 @@ func TestNewTransaction(t *testing.T) {
 	require.NotEqual(t, account.ID, accountDestination.ID)
 
 	amount := 3.10
-	statusTransaction := "pending"
+	statusTransaction := model.TransactionPending
 	transaction, err := model.NewTransaction(account, amount, pixKey, "My description")
 	//
 	require.Nil(t, err)
@@ -56,11 +56,11 @@ func TestModel_ChangeStatusOfATransaction(t *testing.T) {
 
 	accountNumber := "abcnumber"
 	ownerName := "Wesley"
-	account, _ := model.NewAccount(bank, accountNumber, ownerName)
+	account, _ := model.NewAccount(bank, ownerName, accountNumber)
 
 	accountNumberDestination := "abcdestination"
-	ownerName = "Mariana"
-	accountDestination, _ := model.NewAccount(bank, accountNumberDestination, ownerName)
+	ownerNameDestination := "Mariana"
+	accountDestination, _ := model.NewAccount(bank, ownerNameDestination, accountNumberDestination)
 
 	kind := "email"
 	key := "j@j.com"

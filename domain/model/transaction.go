@@ -38,11 +38,13 @@ const (
 // NewTransaction ...
 func NewTransaction(accountFrom *Account, amount float64, pixKey *PixKey, description string) (*Transaction, error) {
 	t := &Transaction{
-		AccountFrom: accountFrom,
-		Amount:      amount,
-		PixKeyTo:    pixKey,
-		Status:      TransactionPending,
-		Description: description,
+		AccountFromID: accountFrom.ID,
+		AccountFrom:   accountFrom,
+		Amount:        amount,
+		PixKeyIDTo:    pixKey.ID,
+		PixKeyTo:      pixKey,
+		Status:        TransactionPending,
+		Description:   description,
 	}
 
 	t.ID = uuid.NewV4().String()
@@ -63,13 +65,15 @@ type TransactionRepositoryInterface interface {
 
 // Transaction ...
 type Transaction struct {
-	Base              `valid:"requried"`
+	Base              `valid:"required"`
 	AccountFrom       *Account          `valid:"-"`
-	Amount            float64           `json:"amount" valid:"notnull"`
+	AccountFromID     string            `gorm:"column:account_from_id;type:uuid" valid:"notnull"`
+	Amount            float64           `json:"amount" valid:"notnull" gorm:"type:float"`
 	PixKeyTo          *PixKey           `valid:"-"`
-	Status            TransactionStatus `json:"status" valid:"notnull"`
-	Description       string            `json:"description" valid:"notnull"`
-	CancelDescription string            `json:"cancel_description" valid:"-"`
+	PixKeyIDTo        string            `gorm:"column:pix_key_id_to;type:uuid;" valid:"notnull"`
+	Status            TransactionStatus `json:"status" valid:"notnull" gorm:"type:varchar(20)"`
+	Description       string            `json:"description" valid:"notnull" gorm:"type:varchar(255)"`
+	CancelDescription string            `json:"cancel_description" valid:"-" gorm:"type:varchar(255)"`
 }
 
 func (t *Transaction) isValid() error {
@@ -81,7 +85,7 @@ func (t *Transaction) isValid() error {
 		return errors.New("invalid status for the transaction")
 	}
 
-	if t.PixKeyTo.AccountID == t.AccountFrom.ID {
+	if t.PixKeyTo.AccountID == t.AccountFromID {
 		return errors.New("the source and the destination account cannot be the same")
 	}
 
@@ -93,7 +97,7 @@ func (t *Transaction) isValid() error {
 
 // Cancel ...
 func (t *Transaction) Cancel(description string) error {
-	t.Description = description
+	t.CancelDescription = description
 	return t.updateStatus(TransactionCanceled)
 }
 
