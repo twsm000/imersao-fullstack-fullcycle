@@ -46,7 +46,7 @@ func (r *PixKeyRepositoryDB) FindKeyByKind(key, kind string) (*model.PixKey, err
 	r.Db.Preload("Account.Bank").First(&pixKey, "kind = ? and key = ?", kind, key)
 
 	if pixKey.ID == "" {
-		return nil, errors.New("no key was found")
+		return nil, errors.New("pixKey not found")
 	}
 
 	return &pixKey, nil
@@ -59,7 +59,7 @@ func (r *PixKeyRepositoryDB) FindAccount(id string) (*model.Account, error) {
 	r.Db.Preload("Bank").First(&account, "id = ?", id)
 
 	if account.ID == "" {
-		return nil, errors.New("no key was found")
+		return nil, errors.New("account not found")
 	}
 
 	return &account, nil
@@ -72,7 +72,7 @@ func (r *PixKeyRepositoryDB) FindBank(id string) (*model.Bank, error) {
 	r.Db.Preload("Bank").First(&bank, "id = ?", id)
 
 	if bank.ID == "" {
-		return nil, errors.New("no key was found")
+		return nil, errors.New("bank not found")
 	}
 
 	return &bank, nil
